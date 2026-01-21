@@ -232,6 +232,49 @@ The pretrained COCO model is fundamentally unsuitable:
 
 ---
 
+## Visual Detection Tool ✅
+
+### Purpose & Benefits
+
+The `infer_visualize.py` script provides real-time visual feedback during detection:
+
+**Key Features:**
+- **Live bounding boxes** - See exactly what YOLO detects
+- **Color-coded classifications** - Green for animals, blue for non-animals
+- **Confidence scores** - Displayed on each detection
+- **Interactive controls** - Pause/resume, quit anytime
+- **Desktop window** - Native OpenCV display (not browser-based)
+
+**Why This Matters:**
+- ✅ **Debugging** - Instantly see misclassifications (wolf→cat, IR glare→banana)
+- ✅ **Validation** - Verify detection quality before batch processing
+- ✅ **Development** - Test confidence thresholds and sampling rates visually
+- ✅ **Demonstrations** - Show stakeholders what the system detects
+
+**Usage Examples:**
+```bash
+# Watch wildlife detections
+python infer_visualize.py --source night_ir.mp4 --conf 0.35
+
+# Slow motion analysis
+python infer_visualize.py --source night_ir.mp4 --conf 0.35 --sample-every 1
+
+# Live stream visualization
+python infer_visualize.py --source udp://127.0.0.1:1234 --conf 0.35
+```
+
+**Visual Indicators:**
+- 🟢 **Green boxes** = Animals (ANIMAL_CLASSES)
+- 🔵 **Blue boxes** = Non-animals (people, objects, false positives)
+- **Label format**: `[ANIMAL] class_name: confidence` or `class_name: confidence`
+
+**Development Workflow:**
+1. Use `infer_visualize.py` to test and validate
+2. Use `infer.py` for production batch processing
+3. Both tools use identical detection logic (same YOLO model, same parameters)
+
+---
+
 ## Pipeline Validation
 
 ### JSON Output Quality ✅
@@ -338,13 +381,24 @@ ANIMAL_CLASSES = {
 
 ## Week 1 Deliverables ✅
 
-- ✅ `infer.py` - Working inference script
+### Code & Tools
+- ✅ `infer_visualize.py` - Visual detection tool with real-time bounding boxes (PRIMARY)
+- ✅ `infer.py` - Headless inference for production/batch processing
+- ✅ `mediamtx.yml` - RTSP server configuration
+
+### Test Results & Data
 - ✅ `night_events.jsonl` - 696 events from IR wildlife footage (MP4)
 - ✅ `day_events.jsonl` - 3,576 events from daylight footage (MP4)
 - ✅ `night_ir_stream.jsonl` - 10 events from IR wildlife stream (UDP network test)
 - ✅ `udp_test.jsonl` - 10 events from daylight stream (UDP network test)
+
+### Documentation
 - ✅ `notes.md` - Comprehensive observations (this document)
+- ✅ `README.md` - Complete usage guide with visualizer examples
+
+### Validation Complete
 - ✅ Pipeline validation - Production-ready architecture
+- ✅ Visual debugging - Real-time detection viewer for development
 - ✅ Network streaming validated - UDP tested, RTSP ready
 - ✅ Problem identification - Clear evidence custom training needed
 
