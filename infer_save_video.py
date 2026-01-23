@@ -8,22 +8,13 @@ ANIMAL_CLASSES = {
     "bear", "zebra", "giraffe", "elephant"
 }
 
-def resize_frame(frame, target_width=1280):
-    """Resize frame to target width while maintaining aspect ratio."""
-    height, width = frame.shape[:2]
-    if width > target_width:
-        scale = target_width / width
-        new_width = target_width
-        new_height = int(height * scale)
-        return cv2.resize(frame, (new_width, new_height), interpolation=cv2.INTER_AREA)
-    return frame
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", required=True, help="MP4 path, RTSP URL, or UDP stream")
+    ap.add_argument("--output", required=True, help="Output video file (e.g., detections.mp4)")
     ap.add_argument("--model", default="yolo11n.pt", help="e.g. yolo11n.pt or yolo12n.pt")
     ap.add_argument("--conf", type=float, default=0.35, help="confidence threshold")
-    ap.add_argument("--sample-every", type=int, default=1, help="show 1 in every N frames (1=all frames)")
+    ap.add_argument("--sample-every", type=int, default=1, help="process 1 in every N frames")
     ap.add_argument("--max-frames", type=int, default=0, help="0 = no limit")
     args = ap.parse_args()
 
@@ -31,29 +22,38 @@ def main():
     if not cap.isOpened():
         raise RuntimeError(f"Failed to open source: {args.source}")
 
+    # Get video properties
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    # Create video writer
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(args.output, fourcc, fps, (width, height))
+    
+    if not out.isOpened():
+        raise RuntimeError(f"Failed to create output video: {args.output}")
+
     model = YOLO(args.model)
     
-    print(f"Playing: {args.source}")
-    print("Press 'q' to quit, 'SPACE' to pause/resume")
+    print(f"Processing: {args.source}")
+    print(f"Saving to: {args.output}")
+    print(f"Resolution: {width}x{height} @ {fps} FPS")
     
     frame_idx = 0
-    paused = False
+    processed = 0
 
     while True:
-        if not paused:
-            ok, frame = cap.read()
-            if not ok:
-                print("End of video or stream interrupted")
-                break
+        ok, frame = cap.read()
+        if not ok:
+            break
 
-            frame_idx += 1
-            if args.max_frames and frame_idx > args.max_frames:
-                break
+        frame_idx += 1
+        if args.max_frames and frame_idx > args.max_frames:
+            break
 
-            # Skip frames if sampling
-            if frame_idx % args.sample_every != 0:
-                continue
-
+        # Process frame
+        if frame_idx % args.sample_every == 0:
             # Run inference
             results = model.predict(frame, conf=args.conf, verbose=False)
             r0 = results[0]
@@ -89,29 +89,23 @@ def main():
                     cv2.putText(frame, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 
                                0.6, (255, 255, 255), 2)
 
-            # Add frame counter and info
-            info_text = f"Frame: {frame_idx} | Press Q to quit, SPACE to pause"
+            # Add frame counter
+            info_text = f"Frame: {frame_idx}"
             cv2.putText(frame, info_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 
                        0.7, (255, 255, 255), 2)
-
-            # Resize frame for display
-            display_frame = resize_frame(frame)
             
-            # Show frame
-            cv2.imshow("Animal Detection - Live View", display_frame)
+            processed += 1
 
-        # Handle keyboard input
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
-            print("Quit requested")
-            break
-        elif key == ord(' '):
-            paused = not paused
-            print("Paused" if paused else "Resumed")
+        # Write frame to output video
+        out.write(frame)
+        
+        if processed % 100 == 0:
+            print(f"Processed {processed} frames ({frame_idx} total)...")
 
     cap.release()
-    cv2.destroyAllWindows()
-    print(f"Processed {frame_idx} frames")
+    out.release()
+    print(f"\n✅ Done! Saved {frame_idx} frames to {args.output}")
+    print(f"Share this file with your team: {args.output}")
 
 if __name__ == "__main__":
     main()
