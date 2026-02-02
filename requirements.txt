@@ -1,0 +1,9 @@
+# Core dependencies for animal detection pipeline
+ultralytics      # YOLO training and inference
+opencv-python    # Video processing
+
+# Note: ultralytics will install numpy, torch, and other dependencies automatically
+# ByteTrack tracking is built into ultralytics - no extra install needed
+
+# For GPU training, ultralytics installs CUDA-compatible PyTorch automatically
+# For manual GPU setup, see: https://pytorch.org/get-started/locally/

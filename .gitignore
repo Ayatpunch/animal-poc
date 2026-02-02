@@ -99,3 +99,18 @@ desktop.ini
 # Test Files (optional - uncomment if needed)
 # test_*.mp4
 # sample_*.jsonl
+
+# Training data (large, keep local only)
+data/train/images/
+data/val/images/
+data/test/images/
+data/holdout_a/images/
+data/holdout_b/images/
+# Keep labels in git (they're small text files)
+# data/*/labels/
+
+# Training runs and outputs
+runs/
+
+# Snapshots (saved alert images)
+snapshots/

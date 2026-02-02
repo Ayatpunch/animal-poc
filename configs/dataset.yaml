@@ -1,0 +1,20 @@
+# Dataset configuration for YOLO training
+# This file tells YOLO where your images/labels are and what classes to detect
+
+# Paths (relative to where you run training, or use absolute paths)
+path: ../data  # Root folder containing train/val/test
+train: train/images
+val: val/images
+test: test/images
+
+# Class names - MUST match exactly what's in Roboflow export
+# Order matters! These match Roboflow's class IDs
+names:
+  0: canine      # wolves, coyotes, dogs, foxes
+  1: cervidae    # deer, elk, moose
+  2: negative    # bears, non-targets (included in data, ignored in inference)
+
+# Notes:
+# - Model will detect all 3 classes during training
+# - infer_gated.py ignores "negative" class for alerts
+# - 680 total images from Roboflow export
