@@ -114,3 +114,8 @@ runs/
 
 # Snapshots (saved alert images)
 snapshots/
+
+# Videos folder (for replay testing)
+videos/*.mp4
+videos/*.avi
+videos/*.mov

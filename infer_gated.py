@@ -34,17 +34,18 @@ from ultralytics import YOLO
 
 
 # Animal classes that should trigger alerts
-# These match the classes trained in your custom model
+# These match the classes trained in your custom model (v2)
 ANIMAL_CLASSES = {
+    "bear",      # bears - ALERT
     "canine",    # wolves, coyotes, dogs, foxes - ALERT
     "cervidae",  # deer, elk, moose - ALERT
     # Also keep COCO classes for backward compatibility with pretrained models
-    "dog", "cat", "horse", "sheep", "cow", "bear", "zebra", "giraffe", "elephant", "deer"
+    "dog", "cat", "horse", "sheep", "cow", "zebra", "giraffe", "elephant", "deer"
 }
 
 # Classes to ignore (won't trigger alerts)
 IGNORE_CLASSES = {
-    "negative",  # for future use - bears, non-target detections
+    "negative",  # for future use - non-target detections
     "human", "vehicle", "person", "car", "truck", "bicycle", "motorcycle"
 }
 

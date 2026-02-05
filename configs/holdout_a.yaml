@@ -1,0 +1,19 @@
+# Holdout A Dataset Configuration
+# Location_05 images - different camera/environment from main training data
+# Used for evaluating model generalization - NEVER train on this data
+
+path: data/holdout_a
+train: images  # Not used - holdout only
+val: images    # Not used - holdout only  
+test: images   # Evaluation split
+
+# Class names - must match training config
+names:
+  0: bear
+  1: canine
+  2: cervidae
+
+# Holdout metadata
+# Source: location_05 from validation set
+# Images: 20
+# Purpose: Test generalization to different camera placement
